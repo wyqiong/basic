@@ -5,8 +5,10 @@ import functools
 class Student(object):
     # 类属性
     name = 'Student'
-
-    def __init__(self, name, score):
+    # 用tuple定义允许绑定的属性名称
+    # 仅对当前类实例起作用，对继承的子类是不起作用的
+    __slots__ = ('me', 'age') 
+    def __init__(self, name, score):na
         # 实例的变量名如果以__开头，就变成了一个私有变量（private），只有内部可以访问，外部不能访问
         # 以双下划线开头，并且以双下划线结尾的，是特殊变量，特殊变量是可以直接访问的，不是private变量
         # 实例属性
@@ -15,7 +17,20 @@ class Student(object):
 
     def print_score(self):
         print('%s: %s' % (self.__name, self.__score))
+        
+    # 既能检查参数，又可以用类似属性这样简单的方式来访问类的变量
+    # @property本身又创建了另一个装饰器@score.setter，负责把一个setter方法变成属性赋值，于是，我们就拥有一个可控的属性操作
+    @property
+    def score(self):
+        return self._score
 
+    @score.setter
+    def score(self, value):
+        if not isinstance(value, int):
+            raise ValueError('score must be an integer!')
+        if value < 0 or value > 100:
+            raise ValueError('score must between 0 ~ 100!')
+        self._score = value
 # 多态
 
 # 获取对象信息
