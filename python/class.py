@@ -15,6 +15,10 @@ class Student(object):
         self.__name = name
         self.__score = score
 
+    def __str__(self):
+        return 'Student object (name=%s)' % self.name
+    __repr__ = __str__
+
     def print_score(self):
         print('%s: %s' % (self.__name, self.__score))
         
@@ -23,7 +27,7 @@ class Student(object):
     @property
     def score(self):
         return self._score
-
+    # 检查参数
     @score.setter
     def score(self, value):
         if not isinstance(value, int):
@@ -31,7 +35,82 @@ class Student(object):
         if value < 0 or value > 100:
             raise ValueError('score must between 0 ~ 100!')
         self._score = value
-# 多态
+
+class Fib(object):
+    def __init__(self):
+        self.a, self.b = 0, 1 # 初始化两个计数器a，b
+
+    def __iter__(self):
+        return self # 实例本身就是迭代对象，故返回自己
+
+    def __next__(self):
+        self.a, self.b = self.b, self.a + self.b # 计算下一个值
+        if self.a > 100000: # 退出循环的条件
+            raise StopIteration()
+        return self.a # 返回下一个值
+    '''
+    >>> for n in Fib():
+    ...     print(n)
+    ...
+    1
+    1
+    2
+    '''
+    def __getitem__(self, n):
+        a, b = 1, 1
+        for x in range(n):
+            a, b = b, a + b
+        return a
+    '''
+    >>> f = Fib()
+    >>> f[0]
+    1
+    >>> f[1]
+    1
+    '''
+    def __getattr__(self, attr):
+        if attr=='score':
+            return 99
+
+# restful api
+class Chain(object):
+
+    def __init__(self, path=''):
+        self._path = path
+
+    def __getattr__(self, path):
+        return Chain('%s/%s' % (self._path, path))
+
+    def __str__(self):
+        return self._path
+
+    __repr__ = __str__
+
+    '''
+    >>> Chain().status.user.timeline.list
+    '/status/user/timeline/list'
+    '''
+
+#
+from enum import Enum, unique
+
+@unique
+class Weekday(Enum):
+    Sun = 0 # Sun的value被设定为0
+    Mon = 1
+    Tue = 2
+    Wed = 3
+    Thu = 4
+    Fri = 5
+    Sat = 6
+    
+# mixin
+class Dog(Mammal, RunnableMixIn, CarnivorousMixIn):
+    pass
+# MixIn的目的就是给一个类增加多个功能，这样，在设计类的时候，我们优先考虑通过多重继承来组合多个MixIn的功能，而不是设计多层次的复杂的继承关系。
+# Python自带的很多库也使用了MixIn。举个例子，Python自带了TCPServer和UDPServer这两类网络服务，而要同时服务多个用户就必须使用多进程或多线程模型，这两种模型由ForkingMixIn和ThreadingMixIn提供。通过组合，我们就可以创造出合适的服务来。
+class MyTCPServer(TCPServer, ForkingMixIn):
+    pass
 
 # 获取对象信息
 class MyObject(object):
