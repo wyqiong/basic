@@ -99,3 +99,22 @@ if __name__=='__main__':
     p.close()
     p.join()
     print('All subprocesses done.')
+
+# 并行执行提升效率
+#试试线程池
+from multiprocessing.pool import ThreadPool
+def func1(n):
+    print(n)
+p = ThreadPool(processes=multiprocessing.cpu_count())
+p.map(func1, [0, 1, 2, 3])
+p.close()
+# 协程
+import asyncio
+async def main():
+    print('Hello ...')
+    await asyncio.sleep(1)
+    print('... World!')
+
+# Python 3.7+
+asyncio.run(main())
+
